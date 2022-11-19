@@ -59,14 +59,13 @@ if __name__ == '__main__':
         else:
             all_labels = torch.cat((all_labels, class_tensor), 0)
     criterion = HUG_MHE()
-    for i in range(200 * 100):
-        num_id = random.sample(range(0, 50000), 512)
-        feat = all_features.cuda()
-        labels = all_labels.squeeze().long().cuda()
-        loss1, loss2, _ = criterion(feat, all_classifier, labels)
-        loss = loss1 + loss2
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        if i % 100 == 0:
-            print(loss1.item(), loss2.item())
+    for i in range(200):
+        for j in range(100):
+            feat = all_features.cuda()
+            labels = all_labels.squeeze().long().cuda()
+            loss1, loss2, _ = decouple_loss_mhs(feat, all_classifier, labels)
+            loss = loss1 + loss2
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        print(loss1.item(), loss2.item())
